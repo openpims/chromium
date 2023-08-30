@@ -1,0 +1,29 @@
+{
+  "name": "openPIMS",
+  "description": "No more coockie banner",
+  "version": "0.0.0.1",
+  "author": "Stefan Böck",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "128": "openpims.png"
+  },
+  "action": {
+    "default_icon": "openpims.png",
+    "default_popup": "action.html",
+    "default_title": "openPIMS option page"
+  },
+  "permissions": [
+    "declarativeNetRequest",
+    "storage"
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}
