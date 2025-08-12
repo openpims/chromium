@@ -1,21 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>openPIMS option page</title>
+    <title>openPIMS Status</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .error-message {
+            color: #d32f2f;
+            background-color: #ffebee;
+            border: 1px solid #ffcdd2;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+        .error-message.visible {
+            display: block;
+        }
+        .button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
-<body>
+<body class="action-page">
+    <div class="header">
+        <img src="openpims.png" width="32" height="32" alt="openPIMS Logo">
+        <h2>openPIMS</h2>
+    </div>
 
-<p>
-  <img src="openpims.png" width="32" height="32">
-  <span>openPIMS</span>
-</p>
+    <div id="loggedInContent" class="hidden">
+        <div class="url-display" id="url"></div>
+        <button id="logoutButton" class="button logout-button">Ausloggen</button>
+    </div>
 
-<input id="url" type="url" size="30" required>
+    <div id="loginForm" class="login-form">
+        <div class="form-group">
+            <label for="email">E-Mail:</label>
+            <input type="email" id="email" name="email">
+        </div>
+        <div class="form-group">
+            <label for="password">Passwort:</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <button id="loginButton" type="button" class="button login-button">Anmelden</button>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
 
-<div id="status"></div>
-<br>
-<button id="save">Save</button>
-
-<script src="options.js"></script>
+    <script src="options.js"></script>
 </body>
 </html>

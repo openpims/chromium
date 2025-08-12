@@ -1,55 +1,141 @@
-// Saves options to chrome.storage
-const saveOptions = () => {
-    const url = document.getElementById('url').value;
+// Lade die gespeicherte URL
+chrome.storage.local.get(['openPimsUrl', 'isLoggedIn', 'email'], (result) => {
+    const loggedInContent = document.getElementById('loggedInContent');
+    const loginForm = document.getElementById('loginForm');
+    const urlElement = document.getElementById('url');
 
-    chrome.storage.sync.set(
-        { openPimsUrl: url },
-        () => {
-            // Update status to let user know options were saved.
-            const status = document.getElementById('status');
-            status.textContent = 'Url saved.';
-            setTimeout(() => {
-                status.textContent = '';
-            }, 750);
+    if (result.isLoggedIn && result.openPimsUrl) {
+        urlElement.innerHTML = `
+            <div style="margin-bottom: 10px;">Angemeldet als: ${result.email || 'Unbekannt'}</div>
+            <div style="font-size: 0.9em; color: #666;">URL: ${result.openPimsUrl}</div>
+        `;
+        loggedInContent.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+    } else {
+        loggedInContent.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+    }
+});
+
+// Warte bis das DOM vollständig geladen ist
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM geladen, registriere Event-Listener');
+    
+    const loginButton = document.getElementById('loginButton');
+    if (!loginButton) {
+        console.error('Login-Button nicht gefunden!');
+        return;
+    }
+
+    loginButton.addEventListener('click', async function(e) {
+        console.log('Login-Button geklickt');
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorMessage = document.getElementById('errorMessage');
+        const loginButton = document.getElementById('loginButton');
+
+        // UI-Status zurücksetzen
+        errorMessage.textContent = '';
+        errorMessage.classList.remove('visible');
+        loginButton.disabled = true;
+        loginButton.textContent = 'Anmeldung läuft...';
+
+        console.log('E-Mail:', email);
+        console.log('Passwort-Länge:', password.length);
+
+        if (!email || !password) {
+            errorMessage.textContent = 'Bitte füllen Sie alle Felder aus.';
+            errorMessage.classList.add('visible');
+            loginButton.disabled = false;
+            loginButton.textContent = 'Anmelden';
+            return;
         }
-    );
 
-    const allResourceTypes = Object.values(chrome.declarativeNetRequest.ResourceType);
+        try {
+            console.log('Sende Login-Anfrage...');
+            const response = await new Promise((resolve, reject) => {
+                chrome.runtime.sendMessage({
+                    action: 'login',
+                    email: email,
+                    password: password
+                }, response => {
+                    if (chrome.runtime.lastError) {
+                        reject(new Error(chrome.runtime.lastError.message));
+                    } else {
+                        resolve(response);
+                    }
+                });
+            });
 
-    const rules = [
-            {
-                id: 1,
-                priority: 1,
-                action: {
-                    type: chrome.declarativeNetRequest.RuleActionType.MODIFY_HEADERS,
-                    requestHeaders: [{
-                        operation: chrome.declarativeNetRequest.HeaderOperation.SET,
-                        header: "x-openpims",
-                        value: url
-                    }]
-                },
-                condition: {
-                    urlFilter: "*",
-                    resourceTypes: allResourceTypes
-                },
-            },
-        ];
-    chrome.declarativeNetRequest.updateDynamicRules({
-        removeRuleIds: rules.map((rule) => rule.id),
-        addRules: rules
+            console.log('Antwort erhalten:', response);
+
+            if (!response.success) {
+                throw new Error(response.error);
+            }
+
+            const data = response.data;
+            console.log('Login erfolgreich');
+            
+            await chrome.storage.local.set({ 
+                openPimsUrl: data.token,
+                email: email,
+                isLoggedIn: true
+            });
+            
+            // UI aktualisieren
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('loggedInContent').classList.remove('hidden');
+            document.getElementById('url').innerHTML = `
+                <div style="margin-bottom: 10px;">Angemeldet als: ${email}</div>
+                <div style="font-size: 0.9em; color: #666;">URL: ${data.token}</div>
+            `;
+            
+        } catch (error) {
+            // Nur die UI aktualisieren, keine Protokollierung
+            errorMessage.textContent = error.message;
+            errorMessage.classList.add('visible');
+            
+            // Setze das Passwort-Feld zurück
+            document.getElementById('password').value = '';
+            document.getElementById('password').focus();
+        } finally {
+            // UI-Status zurücksetzen
+            loginButton.disabled = false;
+            loginButton.textContent = 'Anmelden';
+        }
     });
-};
+});
 
-// Restores select box and checkbox state using the preferences
-// stored in chrome.storage.
-const restoreOptions = () => {
-    chrome.storage.sync.get(
-        { openPimsUrl: '' },
-        (items) => {
-            document.getElementById('url').value = items.openPimsUrl;
-        }
-    );
-};
+// Logout-Button Event Listener
+document.getElementById('logoutButton').addEventListener('click', async () => {
+    try {
+        // Entferne die Header-Regeln
+        await chrome.declarativeNetRequest.updateDynamicRules({
+            removeRuleIds: [1]
+        });
 
-document.addEventListener('DOMContentLoaded', restoreOptions);
-document.getElementById('save').addEventListener('click', saveOptions);
+        // Lösche die gespeicherten Daten
+        await chrome.storage.local.remove(['openPimsUrl', 'isLoggedIn', 'token', 'email']);
+        
+        // Aktualisiere die Anzeige
+        const loggedInContent = document.getElementById('loggedInContent');
+        const loginForm = document.getElementById('loginForm');
+        const urlElement = document.getElementById('url');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Setze Formularfelder zurück
+        emailInput.value = '';
+        passwordInput.value = '';
+        errorMessage.textContent = '';
+
+        loggedInContent.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+        urlElement.textContent = '';
+    } catch (error) {
+        console.error('Fehler beim Ausloggen:', error);
+    }
+});
