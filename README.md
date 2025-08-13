@@ -1,6 +1,6 @@
 # openPIMS Chrome Extension
 
-A Chrome extension for openPIMS integration.
+A Chrome extension for openPIMS integration. This extension also works in Microsoft Edge.
 
 ## Description
 
@@ -19,13 +19,15 @@ Try the extension: https://chromewebstore.google.com/detail/openpims/pgffgdajiok
 
 ## Other Versions
 
-- [Firefox Extension](../firefox)
-- [Safari Extension](../safari)
+- [Firefox Extension](https://github.com/openpims/firefox)
+- [Safari Extension](https://github.com/openpims/safari)
+- [mitmproxy Version](https://github.com/openpims/mitmproxy) - For users who prefer not to use browser extensions
 
 ## Installation
 
+### Chrome/Edge
 1. Clone or download this repository
-2. Open Chrome and navigate to `chrome://extensions/`
+2. Open Chrome and navigate to `chrome://extensions/` (or Edge: `edge://extensions/`)
 3. Enable "Developer mode" in the top right corner
 4. Click "Load unpacked" and select the extension directory
 
