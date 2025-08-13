@@ -1,7 +1,7 @@
 {
   "name": "openPIMS",
   "description": "No more cookie banner",
-  "version": "0.0.0.3",
+  "version": "0.1.0",
   "author": "Stefan Böck",
   "manifest_version": 3,
   "background": {

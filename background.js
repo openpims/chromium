@@ -110,9 +110,9 @@ chrome.storage.onChanged.addListener(async (changes, namespace) => {
 initializeExtension();
 
 // Login-Funktion
-async function handleLogin(email, password) {
+async function handleLogin(email, password, serverUrl) {
     try {
-        const response = await fetch('https://me.openpims.de', {
+        const response = await fetch(serverUrl, {
             method: 'GET',
             headers: {
                 'Authorization': 'Basic ' + btoa(email + ':' + password)
@@ -155,6 +155,7 @@ async function handleLogin(email, password) {
         await chrome.storage.local.set({
             openPimsUrl: openPimsUrl.trim(),
             email: email,
+            serverUrl: serverUrl,
             isLoggedIn: true
         });
 
@@ -175,7 +176,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         // Wrapper für die asynchrone Verarbeitung
         (async () => {
             try {
-                const data = await handleLogin(request.email, request.password);
+                const data = await handleLogin(request.email, request.password, request.serverUrl);
                 sendResponse({ success: true, data });
             } catch (error) {
                 sendResponse({ 

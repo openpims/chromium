@@ -1,5 +1,5 @@
 // Lade die gespeicherte URL
-chrome.storage.local.get(['openPimsUrl', 'isLoggedIn', 'email'], (result) => {
+chrome.storage.local.get(['openPimsUrl', 'isLoggedIn', 'email', 'serverUrl'], (result) => {
     const loggedInContent = document.getElementById('loggedInContent');
     const loginForm = document.getElementById('loginForm');
     const urlElement = document.getElementById('url');
@@ -7,6 +7,7 @@ chrome.storage.local.get(['openPimsUrl', 'isLoggedIn', 'email'], (result) => {
     if (result.isLoggedIn && result.openPimsUrl) {
         urlElement.innerHTML = `
             <div style="margin-bottom: 10px;">Angemeldet als: ${result.email || 'Unbekannt'}</div>
+            <div style="font-size: 0.9em; color: #666;">Server: ${result.serverUrl || 'https://me.openpims.de'}</div>
             <div style="font-size: 0.9em; color: #666;">URL: ${result.openPimsUrl}</div>
         `;
         loggedInContent.classList.remove('hidden');
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+        const serverUrl = document.getElementById('serverUrl').value;
         const errorMessage = document.getElementById('errorMessage');
         const loginButton = document.getElementById('loginButton');
 
@@ -45,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('E-Mail:', email);
         console.log('Passwort-Länge:', password.length);
 
-        if (!email || !password) {
+        if (!email || !password || !serverUrl) {
             errorMessage.textContent = 'Bitte füllen Sie alle Felder aus.';
             errorMessage.classList.add('visible');
             loginButton.disabled = false;
@@ -59,7 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 chrome.runtime.sendMessage({
                     action: 'login',
                     email: email,
-                    password: password
+                    password: password,
+                    serverUrl: serverUrl
                 }, response => {
                     if (chrome.runtime.lastError) {
                         reject(new Error(chrome.runtime.lastError.message));
@@ -81,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await chrome.storage.local.set({ 
                 openPimsUrl: data.token,
                 email: email,
+                serverUrl: serverUrl,
                 isLoggedIn: true
             });
             
@@ -89,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('loggedInContent').classList.remove('hidden');
             document.getElementById('url').innerHTML = `
                 <div style="margin-bottom: 10px;">Angemeldet als: ${email}</div>
+                <div style="font-size: 0.9em; color: #666;">Server: ${serverUrl}</div>
                 <div style="font-size: 0.9em; color: #666;">URL: ${data.token}</div>
             `;
             
@@ -117,7 +122,7 @@ document.getElementById('logoutButton').addEventListener('click', async () => {
         });
 
         // Lösche die gespeicherten Daten
-        await chrome.storage.local.remove(['openPimsUrl', 'isLoggedIn', 'token', 'email']);
+        await chrome.storage.local.remove(['openPimsUrl', 'isLoggedIn', 'token', 'email', 'serverUrl']);
         
         // Aktualisiere die Anzeige
         const loggedInContent = document.getElementById('loggedInContent');
