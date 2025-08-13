@@ -13,6 +13,10 @@ openPIMS Chrome Extension provides seamless integration with openPIMS services. 
 - Clean, responsive popup interface
 - Secure credential management
 
+## Demo
+
+Try the extension: https://chromewebstore.google.com/detail/openpims/pgffgdajiokgdighlhahihkgphlcnc
+
 ## Installation
 
 1. Clone or download this repository
