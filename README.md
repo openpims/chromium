@@ -17,6 +17,11 @@ openPIMS Chrome Extension provides seamless integration with openPIMS services. 
 
 Try the extension: https://chromewebstore.google.com/detail/openpims/pgffgdajiokgdighlhahihkgphlcnc
 
+## Other Versions
+
+- [Firefox Extension](../firefox)
+- [Safari Extension](../safari)
+
 ## Installation
 
 1. Clone or download this repository
