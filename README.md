@@ -1,10 +1,10 @@
-# openPIMS Chrome Extension
+# openPIMS Chromium Extension
 
-A Chrome extension for openPIMS integration. This extension also works in Microsoft Edge.
+A Chromium extension for openPIMS integration. This extension also works in Chrome and Microsoft Edge.
 
 ## Description
 
-openPIMS Chrome Extension provides seamless integration with openPIMS services. The extension allows users to authenticate and interact with openPIMS directly from their browser.
+openPIMS Chromium Extension provides seamless integration with openPIMS services. The extension allows users to authenticate and interact with openPIMS directly from their browser.
 
 ## Features
 
@@ -15,7 +15,9 @@ openPIMS Chrome Extension provides seamless integration with openPIMS services. 
 
 ## Demo
 
-Try the extension: https://chromewebstore.google.com/detail/openpims/pgffgdajiokgdighlhahihkgphlcnc
+- Try the extension in Chrome: https://chromewebstore.google.com/detail/openpims/pgffgdajiokgdighlhahihihkgphlcnc
+- Try the extension in Edge: https://microsoftedge.microsoft.com/addons/detail/openpims/naejpnnnabpkndljlpmoihhejeinjlni
+
 
 ## Other Versions
 
@@ -25,15 +27,15 @@ Try the extension: https://chromewebstore.google.com/detail/openpims/pgffgdajiok
 
 ## Installation
 
-### Chrome/Edge
+### Chromium/Chrome/Edge
 1. Clone or download this repository
-2. Open Chrome and navigate to `chrome://extensions/` (or Edge: `edge://extensions/`)
+2. Open Chromium/Chrome and navigate to `chrome://extensions/` (or Edge: `edge://extensions/`)
 3. Enable "Developer mode" in the top right corner
 4. Click "Load unpacked" and select the extension directory
 
 ## Usage
 
-1. Click the openPIMS extension icon in the Chrome toolbar
+1. Click the openPIMS extension icon in the Chromium/Chrome toolbar
 2. Enter your server URL (defaults to https://me.openpims.de)
 3. Provide your email and password credentials
 4. Click "Anmelden" to log in
