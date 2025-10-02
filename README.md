@@ -1,17 +1,19 @@
 # OpenPIMS Chromium Extension
 
-A Chromium extension for OpenPIMS integration. This extension also works in Chrome and Microsoft Edge.
+Automatic cookie banner blocking through domain-specific HMAC-SHA256 subdomain generation. Works with Chrome, Edge, Brave, and all Chromium-based browsers.
 
 ## Description
 
-OpenPIMS Chromium Extension provides seamless integration with OpenPIMS services. The extension allows users to authenticate and interact with OpenPIMS directly from their browser.
+OpenPIMS Chromium Extension blocks cookie banners by generating unique, domain-specific URLs using deterministic HMAC-SHA256 hashing. Each website you visit gets its own unique OpenPIMS identifier that rotates daily for enhanced privacy.
 
-## Features
+## Key Features
 
-- User authentication with OpenPIMS
-- Server URL configuration
-- Clean, responsive popup interface
-- Secure credential management
+- **Automatic Cookie Banner Blocking** - No manual interaction needed
+- **Domain-Specific Protection** - Each website gets a unique OpenPIMS URL
+- **Daily Rotation** - Subdomains regenerate every 24 hours for privacy
+- **HMAC-SHA256 Security** - Cryptographically secure subdomain generation
+- **Manifest V3 Compliant** - Future-proof implementation
+- **Zero Configuration** - Works immediately after login
 
 ## Demo
 
@@ -35,19 +37,59 @@ OpenPIMS Chromium Extension provides seamless integration with OpenPIMS services
 
 ## Usage
 
-1. Click the OpenPIMS extension icon in the Chromium/Chrome toolbar
+1. Click the OpenPIMS extension icon in the browser toolbar
 2. Enter your server URL (defaults to https://me.openpims.de)
 3. Provide your email and password credentials
 4. Click "Anmelden" to log in
+5. The extension automatically blocks cookie banners on all websites
+
+## Technical Details
+
+### How It Works
+The extension generates domain-specific subdomains using HMAC-SHA256:
+- **Input**: `userId + visitedDomain + dayTimestamp`
+- **Key**: User's secret token (from authentication)
+- **Output**: 32-character hex subdomain (DNS compliant)
+- **Result**: `https://{subdomain}.openpims.de` unique per domain
+
+### Platform Capabilities
+| Feature | Chromium | Firefox | Safari |
+|---------|----------|---------|---------|
+| X-OpenPIMS Headers | ✅ | ✅ | ✅ |
+| Cookie Injection | ✅ | ✅ | Desktop: ❌ Mobile: ✅ |
+| User-Agent Modification | ✅ | ✅ | ✅ Domain-specific |
+| Implementation | Manifest V3 | Manifest V2 | Safari Web Extension |
+
+### API Response Format
+```json
+{
+    "userId": "user123",
+    "token": "secret_key_for_hmac",
+    "domain": "openpims.de"
+}
+```
+
+### Testing the API
+```bash
+curl -u "email@example.com:password" https://me.openpims.de
+```
 
 ## Files
 
-- `manifest.json` - Extension configuration
-- `action.html` - Popup interface
-- `options.js` - Extension logic
-- `background.js` - Background service worker
-- `styles.css` - Stylesheet for the popup
+- `manifest.json` - Manifest V3 configuration with declarativeNetRequest
+- `background.js` - Service worker with HMAC subdomain generation
+- `action.html` - Popup interface (300px width)
+- `options.js` - Login flow and storage management
+- `styles.css` - Responsive popup styling
 - `openpims.png` - Extension icon
+
+## Security
+
+- **HMAC-SHA256** - Cryptographically secure subdomain generation
+- **Daily Rotation** - Subdomains change every 24 hours
+- **Domain Isolation** - Each website gets its own unique identifier
+- **No Tracking** - No data collection or analytics
+- **Local Processing** - All hashing done client-side
 
 ## Author
 
