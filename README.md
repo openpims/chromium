@@ -52,6 +52,11 @@ The extension generates domain-specific subdomains using HMAC-SHA256:
 - **Output**: 32-character hex subdomain (DNS compliant)
 - **Result**: `https://{subdomain}.openpims.de` unique per domain
 
+The extension uses a dual approach for immediate protection:
+- **Content Script**: Injects cookies and headers immediately on page load (first request)
+- **Background Service**: Creates declarativeNetRequest rules for subsequent requests
+- **No Reload Needed**: Protection active from the first page visit
+
 ### Platform Capabilities
 | Feature | Chromium | Firefox | Safari |
 |---------|----------|---------|---------|
@@ -78,6 +83,7 @@ curl -u "email@example.com:password" https://me.openpims.de
 
 - `manifest.json` - Manifest V3 configuration with declarativeNetRequest
 - `background.js` - Service worker with HMAC subdomain generation
+- `content.js` - Content script for immediate cookie injection and header modification
 - `action.html` - Popup interface (300px width)
 - `options.js` - Login flow and storage management
 - `styles.css` - Responsive popup styling
