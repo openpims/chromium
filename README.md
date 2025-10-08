@@ -30,10 +30,17 @@ OpenPIMS Chromium Extension blocks cookie banners by generating unique, domain-s
 ## Installation
 
 ### Chromium/Chrome/Edge
+
+#### Development Installation
 1. Clone or download this repository
-2. Open Chromium/Chrome and navigate to `chrome://extensions/` (or Edge: `edge://extensions/`)
-3. Enable "Developer mode" in the top right corner
-4. Click "Load unpacked" and select the extension directory
+2. Install dependencies: `npm install`
+3. Build the extension: `npm run build`
+4. Open Chromium/Chrome and navigate to `chrome://extensions/` (or Edge: `edge://extensions/`)
+5. Enable "Developer mode" in the top right corner
+6. Click "Load unpacked" and select the extension directory
+
+#### Production Installation
+Download from Chrome Web Store or Edge Add-ons store (see Demo links above)
 
 ## Usage
 
@@ -52,17 +59,19 @@ The extension generates domain-specific subdomains using HMAC-SHA256:
 - **Output**: 32-character hex subdomain (DNS compliant)
 - **Result**: `https://{subdomain}.openpims.de` unique per domain
 
-The extension uses a dual approach for immediate protection:
-- **Content Script**: Injects cookies and headers immediately on page load (first request)
-- **Background Service**: Creates declarativeNetRequest rules for subsequent requests
+The extension uses synchronous HMAC-SHA256 for immediate protection:
+- **Synchronous Hashing**: Uses crypto-js for zero-delay HMAC calculation
+- **Pre-population**: Creates rules for all open tabs on extension start/login
+- **Dynamic Rules**: Synchronous `webNavigation.onBeforeNavigate` - browser waits for rule creation
 - **No Reload Needed**: Protection active from the first page visit
+- **100% First Request Coverage**: Both User-Agent and X-OpenPIMS headers set on initial page load
 
 ### Platform Capabilities
 | Feature | Chromium | Firefox | Safari |
 |---------|----------|---------|---------|
 | X-OpenPIMS Headers | ✅ | ✅ | ✅ |
-| Cookie Injection | ✅ | ✅ | Desktop: ❌ Mobile: ✅ |
 | User-Agent Modification | ✅ | ✅ | ✅ Domain-specific |
+| First Request Protection | ✅ | ✅ | ✅ |
 | Implementation | Manifest V3 | Manifest V2 | Safari Web Extension |
 
 ### API Response Format
@@ -82,12 +91,14 @@ curl -u "email@example.com:password" https://me.openpims.de
 ## Files
 
 - `manifest.json` - Manifest V3 configuration with declarativeNetRequest
-- `background.js` - Service worker with HMAC subdomain generation
-- `content.js` - Content script for immediate cookie injection and header modification
+- `src/background.js` - Source: Service worker with synchronous HMAC subdomain generation and dynamic rule creation
+- `background.js` - Built output: Webpack-bundled background script with crypto-js (~67KB minified)
 - `action.html` - Popup interface (300px width)
 - `options.js` - Login flow and storage management
 - `styles.css` - Responsive popup styling
 - `openpims.png` - Extension icon
+- `webpack.config.js` - Webpack build configuration
+- `package.json` - NPM dependencies (crypto-js) and build scripts
 
 ## Security
 
@@ -103,7 +114,7 @@ Stefan Böck
 
 ## Version
 
-0.1.0
+1.1.0
 
 ## License
 

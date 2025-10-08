@@ -1,0 +1,6 @@
+CLAUDE.md
+node_modules/
+dist/
+package-lock.json
+.idea/
+background.js

@@ -1,36 +1,31 @@
-// Lade die gespeicherten Daten
-chrome.storage.local.get(['userId', 'isLoggedIn', 'email', 'serverUrl'], (result) => {
-    const loggedInContent = document.getElementById('loggedInContent');
-    const loginForm = document.getElementById('loginForm');
-    const urlElement = document.getElementById('url');
-
-    if (result.isLoggedIn && result.userId) {
-        urlElement.innerHTML = `
-            <div style="margin-bottom: 10px;">Angemeldet als: ${result.email || 'Unbekannt'}</div>
-            <div style="font-size: 0.9em; color: #666;">Server: ${result.serverUrl || 'https://me.openpims.de'}</div>
-        `;
-        loggedInContent.classList.remove('hidden');
-        loginForm.classList.add('hidden');
-    } else {
-        loggedInContent.classList.add('hidden');
-        loginForm.classList.remove('hidden');
-    }
-});
-
 // Warte bis das DOM vollständig geladen ist
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM geladen, registriere Event-Listener');
-    
+    // Lade die gespeicherten Daten
+    chrome.storage.local.get(['userId', 'isLoggedIn', 'email', 'serverUrl'], (result) => {
+        const loggedInContent = document.getElementById('loggedInContent');
+        const loginForm = document.getElementById('loginForm');
+        const urlElement = document.getElementById('url');
+
+        if (result.isLoggedIn && result.userId) {
+            urlElement.innerHTML = `
+                <div style="margin-bottom: 10px;">Angemeldet als: ${result.email || 'Unbekannt'}</div>
+                <div style="font-size: 0.9em; color: #666;">Server: ${result.serverUrl || 'https://me.openpims.de'}</div>
+            `;
+            loggedInContent.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+        } else {
+            loggedInContent.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        }
+    });
+
+    // Registriere Login-Button Event-Listener
     const loginButton = document.getElementById('loginButton');
-    if (!loginButton) {
-        console.error('Login-Button nicht gefunden!');
-        return;
-    }
+    if (!loginButton) return;
 
     loginButton.addEventListener('click', async function(e) {
-        console.log('Login-Button geklickt');
         e.preventDefault();
-        
+
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const serverUrl = document.getElementById('serverUrl').value;
@@ -43,9 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loginButton.disabled = true;
         loginButton.textContent = 'Anmeldung läuft...';
 
-        console.log('E-Mail:', email);
-        console.log('Passwort-Länge:', password.length);
-
         if (!email || !password || !serverUrl) {
             errorMessage.textContent = 'Bitte füllen Sie alle Felder aus.';
             errorMessage.classList.add('visible');
@@ -55,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            console.log('Sende Login-Anfrage...');
             const response = await new Promise((resolve, reject) => {
                 chrome.runtime.sendMessage({
                     action: 'login',
@@ -71,13 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            console.log('Antwort erhalten:', response);
-
             if (!response.success) {
                 throw new Error(response.error);
             }
-
-            console.log('Login erfolgreich');
 
             // Storage wurde bereits im background.js gesetzt
             // Hole die aktualisierten Daten
@@ -90,9 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="margin-bottom: 10px;">Angemeldet als: ${result.email}</div>
                 <div style="font-size: 0.9em; color: #666;">Server: ${result.serverUrl}</div>
             `;
-            
         } catch (error) {
-            // Nur die UI aktualisieren, keine Protokollierung
             errorMessage.textContent = error.message;
             errorMessage.classList.add('visible');
             
@@ -105,10 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
             loginButton.textContent = 'Anmelden';
         }
     });
-});
 
-// Logout-Button Event Listener
-document.getElementById('logoutButton').addEventListener('click', async () => {
+    // Logout-Button Event Listener
+    const logoutButton = document.getElementById('logoutButton');
+    if (!logoutButton) return;
+
+    logoutButton.addEventListener('click', async () => {
     try {
         // Lösche die gespeicherten Daten
         await chrome.storage.local.remove(['userId', 'secret', 'appDomain', 'isLoggedIn', 'email', 'serverUrl']);
@@ -129,7 +116,8 @@ document.getElementById('logoutButton').addEventListener('click', async () => {
         loggedInContent.classList.add('hidden');
         loginForm.classList.remove('hidden');
         urlElement.textContent = '';
-    } catch (error) {
-        console.error('Fehler beim Ausloggen:', error);
-    }
+        } catch (error) {
+            // Silently ignore errors
+        }
+    });
 });

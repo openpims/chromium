@@ -1,0 +1,42 @@
+{
+  "name": "chromium",
+  "version": "1.1.0",
+  "description": "Automatic cookie banner blocking through domain-specific HMAC-SHA256 subdomain generation. Works with Chrome, Edge, Brave, and all Chromium-based browsers.",
+  "main": "background.js",
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openpims/chromium.git"
+  },
+  "keywords": [
+    "chromium",
+    "chrome",
+    "edge",
+    "brave",
+    "cookie-banner",
+    "privacy",
+    "openpims",
+    "hmac",
+    "manifest-v3",
+    "browser-extension"
+  ],
+  "author": "Stefan Böck",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/openpims/chromium/issues"
+  },
+  "homepage": "https://github.com/openpims/chromium#readme",
+  "dependencies": {
+    "crypto-js": "^4.2.0"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^13.0.1",
+    "webpack": "^5.102.1",
+    "webpack-cli": "^6.0.1"
+  }
+}
