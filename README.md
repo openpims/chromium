@@ -1,4 +1,11 @@
-# OpenPIMS Chromium Extension
+# ⚠️ DEPRECATED - See https://github.com/openpims/extensions
+
+> **This repository is deprecated and no longer maintained!**
+> **Please use the new unified repository: https://github.com/openpims/extensions**
+
+---
+
+# OpenPIMS Chromium Extension (DEPRECATED)
 
 Automatic cookie banner blocking through domain-specific HMAC-SHA256 subdomain generation. Works with Chrome, Edge, Brave, and all Chromium-based browsers.
 
